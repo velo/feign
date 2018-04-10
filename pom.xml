@@ -37,6 +37,7 @@
     <module>slf4j</module>
     <module>java8</module>
     <module>benchmark</module>
+    <module>jaxrs1-example</module>
   </modules>
 
   <properties>
