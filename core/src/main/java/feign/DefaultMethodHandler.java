@@ -13,18 +13,16 @@
  */
 package feign;
 
-import feign.InvocationHandlerFactory.MethodHandler;
-import org.jvnet.animal_sniffer.IgnoreJRERequirement;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import feign.InvocationHandlerFactory.MethodHandler;
 
 /**
  * Handles default methods by directly invoking the default method code on the interface. The bindTo
  * method must be called on the result before invoke is called.
  */
-@IgnoreJRERequirement
 final class DefaultMethodHandler implements MethodHandler {
   // Uses Java 7 MethodHandle based reflection. As default methods will only exist when
   // run on a Java 8 JVM this will not affect use on legacy JVMs.
@@ -36,15 +34,10 @@ final class DefaultMethodHandler implements MethodHandler {
 
   public DefaultMethodHandler(Method defaultMethod) {
     try {
-      Class<?> declaringClass = defaultMethod.getDeclaringClass();
-      Field field = Lookup.class.getDeclaredField("IMPL_LOOKUP");
-      field.setAccessible(true);
-      Lookup lookup = (Lookup) field.get(null);
-
+      final Class<?> declaringClass = defaultMethod.getDeclaringClass();
+      final Lookup lookup = MethodHandles.privateLookupIn(declaringClass, MethodHandles.lookup());
       this.unboundHandle = lookup.unreflectSpecial(defaultMethod, declaringClass);
-    } catch (NoSuchFieldException ex) {
-      throw new IllegalStateException(ex);
-    } catch (IllegalAccessException ex) {
+    } catch (final IllegalAccessException ex) {
       throw new IllegalStateException(ex);
     }
   }
