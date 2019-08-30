@@ -85,7 +85,7 @@ public final class SynchronousMethodHandler implements MethodHandler {
     Response response;
     long start = System.nanoTime();
     try {
-      response = feignConfig.client.execute(request, feignConfig.options);
+      response = feignConfig.client.execute(request, options);
     } catch (IOException e) {
       if (feignConfig.logLevel != Logger.Level.NONE) {
         feignConfig.logger.logIOException(metadata.configKey(), feignConfig.logLevel, e,
@@ -169,8 +169,9 @@ public final class SynchronousMethodHandler implements MethodHandler {
     if (argv == null || argv.length == 0) {
       return feignConfig.options;
     }
-    return (Options) Stream.of(argv)
-        .filter(o -> o instanceof Options)
+    return Stream.of(argv)
+        .filter(Options.class::isInstance)
+        .map(Options.class::cast)
         .findFirst()
         .orElse(feignConfig.options);
   }
