@@ -31,7 +31,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.data.MapEntry.entry;
 
 /**
- * Tests interfaces defined per {@link Contract.Default} are interpreted into expected
+ * Tests public interface s defined per {@link Contract.Default} are interpreted into expected
  * {@link feign .RequestTemplate template} instances.
  */
 public class DefaultContractTest {
@@ -387,7 +387,7 @@ public class DefaultContractTest {
     assertThat(md.headerMapIndex()).isEqualTo(0);
   }
 
-  interface Methods {
+  public interface Methods {
 
     @RequestLine("POST /")
     void post();
@@ -402,7 +402,7 @@ public class DefaultContractTest {
     void delete();
   }
 
-  interface BodyParams {
+  public interface BodyParams {
 
     @RequestLine("POST")
     Response post(List<String> body);
@@ -414,13 +414,13 @@ public class DefaultContractTest {
     Response tooMany(List<String> body, List<String> body2);
   }
 
-  interface CustomMethod {
+  public interface CustomMethod {
 
     @RequestLine("PATCH")
     Response patch();
   }
 
-  interface WithQueryParamsInPath {
+  public interface WithQueryParamsInPath {
 
     @RequestLine("GET /")
     Response none();
@@ -444,7 +444,7 @@ public class DefaultContractTest {
     Response twoEmpty();
   }
 
-  interface BodyWithoutParameters {
+  public interface BodyWithoutParameters {
 
     @RequestLine("POST /")
     @Headers("Content-Type: application/xml")
@@ -453,7 +453,7 @@ public class DefaultContractTest {
   }
 
   @Headers("Content-Type: application/xml")
-  interface HeadersOnType {
+  public interface HeadersOnType {
 
     @RequestLine("POST /")
     @Body("<v01:getAccountsListOfUser/>")
@@ -461,20 +461,20 @@ public class DefaultContractTest {
   }
 
   @Headers("Content-Type:    application/xml   ")
-  interface HeadersContainsWhitespaces {
+  public interface HeadersContainsWhitespaces {
 
     @RequestLine("POST /")
     @Body("<v01:getAccountsListOfUser/>")
     Response post();
   }
 
-  interface WithURIParam {
+  public interface WithURIParam {
 
     @RequestLine("GET /{1}/{2}")
     Response uriParam(@Param("1") String one, URI endpoint, @Param("2") String two);
   }
 
-  interface WithPathAndQueryParams {
+  public interface WithPathAndQueryParams {
 
     @RequestLine("GET /domains/{domainId}/records?name={name}&type={type}")
     Response recordsByNameAndType(@Param("domainId") int id,
@@ -482,7 +482,7 @@ public class DefaultContractTest {
                                   @Param("type") String typeFilter);
   }
 
-  interface FormParams {
+  public interface FormParams {
 
     @RequestLine("POST /")
     @Body("%7B\"customer_name\": \"{customer_name}\", \"user_name\": \"{user_name}\", \"password\": \"{password}\"%7D")
@@ -492,7 +492,7 @@ public class DefaultContractTest {
                @Param("password") String password);
   }
 
-  interface HeaderMapInterface {
+  public interface HeaderMapInterface {
 
     @RequestLine("POST /")
     void multipleHeaderMap(@HeaderMap Map<String, String> headers,
@@ -502,21 +502,21 @@ public class DefaultContractTest {
     void headerMapSubClass(@HeaderMap SubClassHeaders httpHeaders);
   }
 
-  interface HeaderParams {
+  public interface HeaderParams {
 
     @RequestLine("POST /")
     @Headers({"Auth-Token: {authToken}", "Auth-Token: Foo"})
     void logout(@Param("authToken") String token);
   }
 
-  interface HeaderParamsNotAtStart {
+  public interface HeaderParamsNotAtStart {
 
     @RequestLine("POST /")
     @Headers({"Authorization: Bearer {authToken}", "Authorization: Foo"})
     void logout(@Param("authToken") String token);
   }
 
-  interface CustomExpander {
+  public interface CustomExpander {
 
     @RequestLine("POST /?date={date}")
     void date(@Param(value = "date", expander = DateToMillis.class) Date date);
@@ -530,7 +530,7 @@ public class DefaultContractTest {
     }
   }
 
-  interface QueryMapTestInterface {
+  public interface QueryMapTestInterface {
 
     @RequestLine("POST /")
     void queryMap(@QueryMap Map<String, String> queryMap);
@@ -563,7 +563,7 @@ public class DefaultContractTest {
     void nonStringKeyQueryMap(@QueryMap Map<Integer, String> queryMap);
   }
 
-  interface SlashNeedToBeEncoded {
+  public interface SlashNeedToBeEncoded {
     @RequestLine(value = "GET /api/queues/{vhost}", decodeSlash = false)
     String getQueues(@Param("vhost") String vhost);
 
@@ -572,13 +572,13 @@ public class DefaultContractTest {
   }
 
   @Headers("Foo: Bar")
-  interface SimpleParameterizedBaseApi<M> {
+  public interface SimpleParameterizedBaseApi<M> {
 
     @RequestLine("GET /api/{zoneId}")
     M get(@Param("key") String key);
   }
 
-  interface SimpleParameterizedApi extends SimpleParameterizedBaseApi<String> {
+  public interface SimpleParameterizedApi extends SimpleParameterizedBaseApi<String> {
 
   }
 
@@ -603,7 +603,7 @@ public class DefaultContractTest {
     contract.parseAndValidatateMetadata(SimpleParameterizedBaseApi.class);
   }
 
-  interface OverrideParameterizedApi extends SimpleParameterizedBaseApi<String> {
+  public interface OverrideParameterizedApi extends SimpleParameterizedBaseApi<String> {
 
     @Override
     @RequestLine("GET /api/{zoneId}")
@@ -617,11 +617,11 @@ public class DefaultContractTest {
     contract.parseAndValidatateMetadata(OverrideParameterizedApi.class);
   }
 
-  interface Child<T> extends SimpleParameterizedBaseApi<List<T>> {
+  public interface Child<T> extends SimpleParameterizedBaseApi<List<T>> {
 
   }
 
-  interface GrandChild extends Child<String> {
+  public interface GrandChild extends Child<String> {
 
   }
 
@@ -633,7 +633,7 @@ public class DefaultContractTest {
   }
 
   @Headers("Foo: Bar")
-  interface ParameterizedBaseApi<K, M> {
+  public interface ParameterizedBaseApi<K, M> {
 
     @RequestLine("GET /api/{key}")
     Entity<K, M> get(@Param("key") K key);
@@ -659,13 +659,13 @@ public class DefaultContractTest {
   }
 
 
-  interface SubClassHeaders extends Map<String, String> {
+  public interface SubClassHeaders extends Map<String, String> {
 
   }
 
 
   @Headers("Version: 1")
-  interface ParameterizedApi extends ParameterizedBaseApi<String, Long> {
+  public interface ParameterizedApi extends ParameterizedBaseApi<String, Long> {
 
   }
 
@@ -697,7 +697,7 @@ public class DefaultContractTest {
   }
 
   @Headers("Authorization: {authHdr}")
-  interface ParameterizedHeaderExpandApi {
+  public interface ParameterizedHeaderExpandApi {
     @RequestLine("GET /api/{zoneId}")
     @Headers("Accept: application/json")
     String getZone(@Param("zoneId") String vhost, @Param("authHdr") String authHdr);
@@ -743,17 +743,17 @@ public class DefaultContractTest {
   }
 
   @Headers("Authorization: Bearer {authHdr}")
-  interface ParameterizedHeaderNotStartingWithCurlyBraceExpandApi {
+  public interface ParameterizedHeaderNotStartingWithCurlyBraceExpandApi {
     @RequestLine("GET /api/{zoneId}")
     @Headers("Accept: application/json")
     String getZone(@Param("zoneId") String vhost, @Param("authHdr") String authHdr);
   }
 
   @Headers("Authorization: {authHdr}")
-  interface ParameterizedHeaderBase {
+  public interface ParameterizedHeaderBase {
   }
 
-  interface ParameterizedHeaderExpandInheritedApi extends ParameterizedHeaderBase {
+  public interface ParameterizedHeaderExpandInheritedApi extends ParameterizedHeaderBase {
     @RequestLine("GET /api/{zoneId}")
     @Headers("Accept: application/json")
     String getZoneAccept(@Param("zoneId") String vhost, @Param("authHdr") String authHdr);
@@ -804,7 +804,7 @@ public class DefaultContractTest {
         targetType.getMethod(method, parameterTypes));
   }
 
-  interface MissingMethod {
+  public interface MissingMethod {
     @RequestLine("/path?queryParam={queryParam}")
     Response updateSharing(@Param("queryParam") long queryParam, String bodyParam);
   }
@@ -819,7 +819,7 @@ public class DefaultContractTest {
     contract.parseAndValidatateMetadata(MissingMethod.class);
   }
 
-  interface StaticMethodOnInterface {
+  public interface StaticMethodOnInterface {
     @RequestLine("GET /api/{key}")
     String get(@Param("key") String key);
 
@@ -836,7 +836,7 @@ public class DefaultContractTest {
     assertThat(md.configKey()).isEqualTo("StaticMethodOnInterface#get(String)");
   }
 
-  interface DefaultMethodOnInterface {
+  public interface DefaultMethodOnInterface {
     @RequestLine("GET /api/{key}")
     String get(@Param("key") String key);
 
@@ -853,7 +853,7 @@ public class DefaultContractTest {
     assertThat(md.configKey()).isEqualTo("DefaultMethodOnInterface#get(String)");
   }
 
-  interface SubstringQuery {
+  public interface SubstringQuery {
     @RequestLine("GET /_search?q=body:{body}")
     String paramIsASubstringOfAQuery(@Param("body") String body);
   }

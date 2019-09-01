@@ -51,6 +51,8 @@ public final class RequestTemplate implements Serializable {
   private Request.Body body = Request.Body.empty();
   private boolean decodeSlash = true;
   private CollectionFormat collectionFormat = CollectionFormat.EXPLODED;
+  private String uri;
+  private boolean uriAppend;
 
   /**
    * Create a new Request Template.
@@ -402,6 +404,8 @@ public final class RequestTemplate implements Serializable {
     if (UriUtils.isAbsolute(uri)) {
       throw new IllegalArgumentException("url values must be not be absolute.");
     }
+    this.uri = uri;
+    this.uriAppend = append;
 
     if (uri == null) {
       uri = "/";
@@ -929,6 +933,14 @@ public final class RequestTemplate implements Serializable {
      * create a request template using args passed to a method invocation.
      */
     RequestTemplate create(Object[] argv);
+  }
+
+  public String uri() {
+    return uri;
+  }
+
+  public boolean uriAppend() {
+    return uriAppend;
   }
 
 }

@@ -82,6 +82,10 @@ public final class Request {
       return new Request.Body(null, null, null);
     }
 
+    public Charset encoding() {
+      return encoding;
+    }
+
   }
 
   public enum HttpMethod {

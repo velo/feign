@@ -199,7 +199,7 @@ public interface Contract {
     /**
      * links a parameter name to its index in the method signature.
      */
-    protected void nameParam(MethodMetadata data, String name, int i) {
+    public void nameParam(MethodMetadata data, String name, int i) {
       Collection<String> names =
           data.indexToName().containsKey(i) ? data.indexToName().get(i) : new ArrayList<String>();
       names.add(name);
@@ -332,14 +332,22 @@ public interface Contract {
      * @param annotation to be processed
      * @param processor function that defines the annotations modifies {@link MethodMetadata}
      */
-    protected <E extends Annotation> void registerParameterAnnotation(Class<E> annotation,
-                                                                      ParameterAnnotationProcessor<E> processor) {
+    public <E extends Annotation> void registerParameterAnnotation(Class<E> annotation,
+                                                                   ParameterAnnotationProcessor<E> processor) {
       this.parameterAnnotationProcessors.put((Class) annotation,
           (ParameterAnnotationProcessor) processor);
     }
 
     public Map<Class<Annotation>, ClassAnnotationProcessor<Annotation>> getClassAnnotationProcessors() {
       return Collections.unmodifiableMap(classAnnotationProcessors);
+    }
+
+    public Map<Class<Annotation>, MethodAnnotationProcessor<Annotation>> getMethodAnnotationProcessors() {
+      return Collections.unmodifiableMap(methodAnnotationProcessors);
+    }
+
+    public Map<Class<Annotation>, ParameterAnnotationProcessor<Annotation>> getParameterAnnotationProcessors() {
+      return Collections.unmodifiableMap(parameterAnnotationProcessors);
     }
 
   }

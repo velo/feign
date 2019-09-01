@@ -13,24 +13,40 @@
  */
 package feign.aptgenerator.github;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import example.github.Contributor;
-import example.github.GitHubExample.*;
+import example.github.GitHubExample.GitHub;
 import example.github.Issue;
 import example.github.Repository;
 import feign.*;
 import feign.InvocationHandlerFactory.MethodHandler;
 import feign.Request.HttpMethod;
 import feign.Target.HardCodedTarget;
+import feign.apt.runtime.ParameterizedType;
 
 public class GitHubFactory implements GitHub {
 
-  private static final MethodMetadata __repos_metadata;
+  private static abstract class TypeResolver<T> {
+    private final Type type;
+
+    private TypeResolver() {
+      this.type =
+          ((java.lang.reflect.ParameterizedType) getClass().getGenericSuperclass())
+              .getActualTypeArguments()[0];
+    }
+
+    public Type resolve() {
+      return type;
+    }
+
+  }
+
+  private static final MethodMetadata __GitHub_repos__metadata;
   static {
     final MethodMetadata md = new MethodMetadata();
-    __repos_metadata = md;
-    md.returnType(new TypeReference<List<Repository>>() {}.getType());
+    md.returnType(new ParameterizedType(List.class, null, Repository.class));
     md.configKey("GitHub#repos(String)");
 
     md.template().method(HttpMethod.GET);
@@ -40,13 +56,14 @@ public class GitHubFactory implements GitHub {
 
     md.indexToName().put(0, Arrays.asList("username"));
     md.indexToEncoded().put(0, false);
+    __GitHub_repos__metadata = md;
   }
 
-  private static final MethodMetadata __contributors_metadata;
+  private static final MethodMetadata __GitHub_contributors__metadata;
   static {
     final MethodMetadata md = new MethodMetadata();
-    __contributors_metadata = md;
-    md.returnType(new TypeReference<List<Contributor>>() {}.getType());
+    __GitHub_contributors__metadata = md;
+    md.returnType(new ParameterizedType(List.class, null, Contributor.class));
     md.configKey("GitHub#contributors(String,String)");
 
     md.template().method(HttpMethod.GET);
@@ -61,11 +78,11 @@ public class GitHubFactory implements GitHub {
     md.indexToEncoded().put(1, false);
   }
 
-  private static final MethodMetadata __createIssue_metadata;
+  private static final MethodMetadata __GitHub_createIssue__metadata;
   static {
     final MethodMetadata md = new MethodMetadata();
-    __createIssue_metadata = md;
-    md.returnType(new TypeReference<List<Contributor>>() {}.getType());
+    __GitHub_createIssue__metadata = md;
+    md.returnType(void.class);
     md.configKey("GitHub#createIssue(Issue,String,String)");
 
     md.template().method(HttpMethod.POST);
@@ -82,7 +99,7 @@ public class GitHubFactory implements GitHub {
 
   private final MethodHandler __repos_handler;
   private final MethodHandler __contributors_handler;
-  private SynchronousMethodHandler __createIssue_handler;
+  private final SynchronousMethodHandler __createIssue_handler;
 
   public GitHubFactory(FeignConfig feignConfig) {
     final HardCodedTarget<GitHub> target =
@@ -91,20 +108,20 @@ public class GitHubFactory implements GitHub {
     __repos_handler = new SynchronousMethodHandler(
         target,
         feignConfig,
-        __repos_metadata,
-        ReflectiveFeign.from(__repos_metadata, feignConfig));
+        __GitHub_repos__metadata,
+        ReflectiveFeign.from(__GitHub_repos__metadata, feignConfig));
 
     __contributors_handler = new SynchronousMethodHandler(
         target,
         feignConfig,
-        __contributors_metadata,
-        ReflectiveFeign.from(__contributors_metadata, feignConfig));
+        __GitHub_contributors__metadata,
+        ReflectiveFeign.from(__GitHub_contributors__metadata, feignConfig));
 
     __createIssue_handler = new SynchronousMethodHandler(
         target,
         feignConfig,
-        __contributors_metadata,
-        ReflectiveFeign.from(__contributors_metadata, feignConfig));
+        __GitHub_contributors__metadata,
+        ReflectiveFeign.from(__GitHub_contributors__metadata, feignConfig));
 
   }
 
