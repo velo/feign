@@ -84,7 +84,7 @@ public class ContractAPT extends AbstractProcessor {
             .createSourceFile(type.getSimpleName() + "Factory");
         final StringBuilder writer = new StringBuilder();
         writer.append("package " + jPackage + ";").append("\n");
-        writer.append("import feign.MethodMetadata;").append("\n");
+        writer.append("import feign.*;").append("\n");
         writer.append("public class " + type.getSimpleName() + "Factory").append("\n");
         writer.append("{").append("\n");
 

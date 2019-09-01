@@ -14,7 +14,6 @@
 package feign.aptgenerator.github;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 import example.github.Contributor;
 import example.github.GitHubExample.GitHub;
@@ -54,7 +53,7 @@ public class GitHubFactory implements GitHub {
     md.template().decodeSlash(true);
     md.template().collectionFormat(CollectionFormat.EXPLODED);
 
-    md.indexToName().put(0, Arrays.asList("username"));
+    md.indexToName().put(0, java.util.Arrays.asList("username"));
     md.indexToEncoded().put(0, false);
     __GitHub_repos__metadata = md;
   }
@@ -71,10 +70,10 @@ public class GitHubFactory implements GitHub {
     md.template().decodeSlash(true);
     md.template().collectionFormat(CollectionFormat.EXPLODED);
 
-    md.indexToName().put(0, Arrays.asList("owner"));
+    md.indexToName().put(0, java.util.Arrays.asList("owner"));
     md.indexToEncoded().put(0, false);
 
-    md.indexToName().put(1, Arrays.asList("repo"));
+    md.indexToName().put(1, java.util.Arrays.asList("repo"));
     md.indexToEncoded().put(1, false);
   }
 
@@ -90,10 +89,10 @@ public class GitHubFactory implements GitHub {
     md.template().decodeSlash(true);
     md.template().collectionFormat(CollectionFormat.EXPLODED);
 
-    md.indexToName().put(0, Arrays.asList("owner"));
+    md.indexToName().put(0, java.util.Arrays.asList("owner"));
     md.indexToEncoded().put(0, false);
 
-    md.indexToName().put(1, Arrays.asList("repo"));
+    md.indexToName().put(1, java.util.Arrays.asList("repo"));
     md.indexToEncoded().put(1, false);
   }
 

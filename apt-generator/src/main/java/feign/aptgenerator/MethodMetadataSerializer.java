@@ -66,7 +66,7 @@ public class MethodMetadataSerializer {
         .append("    md.formParams().add(\"" + formParam + "\");"));
 
     method.indexToName().forEach((index, valueList) -> sb
-        .append("    md.indexToName().put(" + index + ", Arrays.asList("
+        .append("    md.indexToName().put(" + index + ", java.util.Arrays.asList("
             + valueList.stream().collect(Collectors.joining("\",\"", "\"", "\"")) + "));")
         .append("\n"));
     if (method.indexToExpander() != null) {
