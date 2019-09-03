@@ -22,7 +22,7 @@ import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import feign.Contract.VisitorContract.ClassAnnotationProcessor;
+import feign.Contract.DeclarativeContract.ClassAnnotationProcessor;
 import feign.Request.HttpMethod;
 import static feign.Util.checkState;
 import static feign.Util.emptyToNull;
@@ -199,14 +199,19 @@ public interface Contract {
     /**
      * links a parameter name to its index in the method signature.
      */
-    public void nameParam(MethodMetadata data, String name, int i) {
+    protected void nameParam(MethodMetadata data, String name, int i) {
       Collection<String> names =
           data.indexToName().containsKey(i) ? data.indexToName().get(i) : new ArrayList<String>();
       names.add(name);
       data.indexToName().put(i, names);
     }
   }
-  abstract class VisitorContract extends BaseContract {
+
+  /**
+   * {@link Contract} base implementation that works by declaring witch annotations should be
+   * processed and how each annotation modifies {@link MethodMetadata}
+   */
+  abstract class DeclarativeContract extends BaseContract {
 
     Map<Class<Annotation>, ClassAnnotationProcessor<Annotation>> classAnnotationProcessors =
         new HashMap<>();
@@ -225,10 +230,9 @@ public interface Contract {
     @Override
     protected final void processAnnotationOnClass(MethodMetadata data, Class<?> targetType) {
       Arrays.stream(targetType.getAnnotations())
-          .forEach(annotation -> classAnnotationProcessors.forEach((type, processor) -> {
-            if (type.isInstance(annotation))
-              processor.process(annotation, data);
-          }));
+          .forEach(annotation -> classAnnotationProcessors
+              .get(annotation.annotationType())
+              .process(annotation, data));
     }
 
     /**
@@ -240,10 +244,8 @@ public interface Contract {
     protected final void processAnnotationOnMethod(MethodMetadata data,
                                                    Annotation annotation,
                                                    Method method) {
-      methodAnnotationProcessors.forEach((type, processor) -> {
-        if (type.isInstance(annotation))
-          processor.process(annotation, data);
-      });
+      methodAnnotationProcessors.get(annotation.annotationType())
+          .process(annotation, data);
     }
 
 
@@ -259,11 +261,10 @@ public interface Contract {
                                                           Annotation[] annotations,
                                                           int paramIndex) {
       return Arrays.stream(annotations)
-          .flatMap(annotation -> parameterAnnotationProcessors.entrySet()
-              .stream()
-              .map(entry -> entry.getKey().isInstance(annotation)
-                  ? entry.getValue().process(annotation, data, paramIndex)
-                  : false))
+          .filter(
+              annotation -> parameterAnnotationProcessors.containsKey(annotation.annotationType()))
+          .map(annotation -> parameterAnnotationProcessors.get(annotation.annotationType())
+              .process(annotation, data, paramIndex))
           .collect(Collectors.reducing(Boolean::logicalOr))
           .orElse(false);
     }
@@ -332,8 +333,8 @@ public interface Contract {
      * @param annotation to be processed
      * @param processor function that defines the annotations modifies {@link MethodMetadata}
      */
-    public <E extends Annotation> void registerParameterAnnotation(Class<E> annotation,
-                                                                   ParameterAnnotationProcessor<E> processor) {
+    protected <E extends Annotation> void registerParameterAnnotation(Class<E> annotation,
+                                                                      ParameterAnnotationProcessor<E> processor) {
       this.parameterAnnotationProcessors.put((Class) annotation,
           (ParameterAnnotationProcessor) processor);
     }
@@ -342,17 +343,9 @@ public interface Contract {
       return Collections.unmodifiableMap(classAnnotationProcessors);
     }
 
-    public Map<Class<Annotation>, MethodAnnotationProcessor<Annotation>> getMethodAnnotationProcessors() {
-      return Collections.unmodifiableMap(methodAnnotationProcessors);
-    }
-
-    public Map<Class<Annotation>, ParameterAnnotationProcessor<Annotation>> getParameterAnnotationProcessors() {
-      return Collections.unmodifiableMap(parameterAnnotationProcessors);
-    }
-
   }
 
-  class Default extends VisitorContract {
+  class Default extends DeclarativeContract {
 
     static final Pattern REQUEST_LINE_PATTERN = Pattern.compile("^([A-Z]+)[ ]*(.*)$");
 
