@@ -11,26 +11,25 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package feign.codec;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import feign.Response;
-import feign.Util;
-import static java.lang.String.format;
+package feign.googlehttpclient;
 
-public class StringDecoder implements Decoder {
+import feign.Feign;
+import feign.Feign.Builder;
+import feign.client.AbstractClientTest;
+
+public class GoogleHttpClientTest extends AbstractClientTest {
+  @Override
+  public Builder newBuilder() {
+    return Feign.builder()
+        .client(new GoogleHttpClient());
+  }
+
+  // Google http client doesn't support PATCH. See:
+  // https://github.com/googleapis/google-http-java-client/issues/167
+  @Override
+  public void noResponseBodyForPatch() {}
 
   @Override
-  public Object decode(Response response, Type type) throws IOException {
-    Response.Body body = response.body();
-    if (body == null) {
-      return null;
-    }
-    if (String.class.equals(type)) {
-      return Util.toString(body.asReader());
-    }
-    throw new DecodeException(response.status(),
-        format("%s is not a type supported by this decoder.", type), response.request());
-  }
+  public void testPatch() {}
 }

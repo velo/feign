@@ -64,7 +64,7 @@ public class JAXBDecoder implements Decoder {
 
   @Override
   public Object decode(Response response, Type type) throws IOException {
-    if (response.status() == 404 || response.status() == 204)
+    if (response.status() == 204)
       return Util.emptyValueOf(type);
     if (response.body() == null)
       return null;
@@ -92,7 +92,7 @@ public class JAXBDecoder implements Decoder {
           saxParserFactory.newSAXParser().getXMLReader(),
           new InputSource(response.body().asInputStream())));
     } catch (JAXBException | ParserConfigurationException | SAXException e) {
-      throw new DecodeException(response.status(), e.toString(), e);
+      throw new DecodeException(response.status(), e.toString(), response.request(), e);
     } finally {
       if (response.body() != null) {
         response.body().close();

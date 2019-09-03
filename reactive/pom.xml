@@ -19,7 +19,7 @@
   <parent>
     <groupId>io.github.openfeign</groupId>
     <artifactId>parent</artifactId>
-    <version>10.3.0-SNAPSHOT</version>
+    <version>10.4.1-SNAPSHOT</version>
   </parent>
   <artifactId>feign-reactive-wrappers</artifactId>
 
@@ -69,6 +69,12 @@
       <groupId>io.github.openfeign</groupId>
       <artifactId>feign-jackson</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-test</artifactId>
+      <version>${reactor.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

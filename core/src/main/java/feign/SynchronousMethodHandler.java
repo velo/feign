@@ -161,7 +161,7 @@ public final class SynchronousMethodHandler implements MethodHandler {
     } catch (FeignException e) {
       throw e;
     } catch (RuntimeException e) {
-      throw new DecodeException(response.status(), e.getMessage(), e);
+      throw new DecodeException(response.status(), e.getMessage(), response.request(), e);
     }
   }
 
