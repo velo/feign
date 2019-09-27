@@ -25,8 +25,8 @@ import feign.Contract.BaseContract;
  */
 public abstract class DeclarativeContract extends BaseContract {
 
-  private List<GuardedAnnotationProcessor> classAnnotationProcessors = new ArrayList<>();
-  private List<GuardedAnnotationProcessor> methodAnnotationProcessors = new ArrayList<>();
+  private final List<GuardedAnnotationProcessor> classAnnotationProcessors = new ArrayList<>();
+  private final List<GuardedAnnotationProcessor> methodAnnotationProcessors = new ArrayList<>();
   Map<Class<Annotation>, DeclarativeContract.ParameterAnnotationProcessor<Annotation>> parameterAnnotationProcessors =
       new HashMap<>();
 
@@ -168,8 +168,6 @@ public abstract class DeclarativeContract extends BaseContract {
      * @param metadata metadata collected so far relating to the current java method.
      * @param paramIndex if you find a name in {@code annotations}, call
      *        {@link #nameParam(MethodMetadata, String, int)} with this as the last parameter.
-     * @return true if you called {@link #nameParam(MethodMetadata, String, int)} after finding an
-     *         http-relevant annotation.
      */
     void process(E annotation, MethodMetadata metadata, int paramIndex);
   }
@@ -177,8 +175,8 @@ public abstract class DeclarativeContract extends BaseContract {
   private class GuardedAnnotationProcessor
       implements Predicate<Annotation>, DeclarativeContract.AnnotationProcessor<Annotation> {
 
-    private Predicate<Annotation> predicate;
-    private DeclarativeContract.AnnotationProcessor<Annotation> processor;
+    private final Predicate<Annotation> predicate;
+    private final DeclarativeContract.AnnotationProcessor<Annotation> processor;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private GuardedAnnotationProcessor(Predicate predicate,
@@ -193,10 +191,14 @@ public abstract class DeclarativeContract extends BaseContract {
     }
 
     @Override
-    public boolean test(Annotation t) {
-      return predicate.test(t);
+    public boolean test(Annotation annotation) {
+      return predicate.test(annotation);
     }
 
+  }
+
+  public List<GuardedAnnotationProcessor> getClassAnnotationProcessors() {
+    return this.classAnnotationProcessors;
   }
 
 }

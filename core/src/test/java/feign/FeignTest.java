@@ -832,7 +832,7 @@ public class FeignTest {
   public void mapAndDecodeExecutesMapFunction() throws Exception {
     server.enqueue(new MockResponse().setBody("response!"));
 
-    TestInterface api = new Feign.Builder()
+    TestInterface api = Feign.builder()
         .mapAndDecode(upperCaseResponseMapper(), new StringDecoder())
         .target(TestInterface.class, "http://localhost:" + server.getPort());
 
@@ -1056,7 +1056,7 @@ public class FeignTest {
 
   static final class TestInterfaceBuilder {
 
-    private final Feign.Builder delegate = new Feign.Builder()
+    private final Feign.Builder delegate = Feign.builder()
         .decoder(new Decoder.Default())
         .encoder(new Encoder() {
           @Override

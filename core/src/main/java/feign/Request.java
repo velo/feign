@@ -89,6 +89,10 @@ public final class Request {
       return encoding == null || data == null;
     }
 
+    public Charset encoding() {
+      return encoding;
+    }
+
   }
 
   public enum HttpMethod {
@@ -243,6 +247,12 @@ public final class Request {
     private final TimeUnit readTimeoutUnit;
     private final boolean followRedirects;
 
+    @Override
+    public String toString() {
+      return "Options [connectTimeout=" + connectTimeout + ", connectTimeoutUnit="
+          + connectTimeoutUnit + ", readTimeout=" + readTimeout + ", readTimeoutUnit="
+          + readTimeoutUnit + ", followRedirects=" + followRedirects + "]";
+    }
 
     public Options(long connectTimeout, TimeUnit connectTimeoutUnit,
         long readTimeout, TimeUnit readTimeoutUnit,
