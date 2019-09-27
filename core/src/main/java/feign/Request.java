@@ -249,8 +249,9 @@ public final class Request {
 
     @Override
     public String toString() {
-      return "Options [connectTimeoutMillis=" + connectTimeoutMillis + ", readTimeoutMillis="
-          + readTimeoutMillis + ", followRedirects=" + followRedirects + "]";
+      return "Options [connectTimeout=" + connectTimeout + ", connectTimeoutUnit="
+          + connectTimeoutUnit + ", readTimeout=" + readTimeout + ", readTimeoutUnit="
+          + readTimeoutUnit + ", followRedirects=" + followRedirects + "]";
     }
 
     public Options(long connectTimeout, TimeUnit connectTimeoutUnit,

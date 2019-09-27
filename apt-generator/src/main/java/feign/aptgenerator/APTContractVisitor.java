@@ -21,10 +21,9 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.lang.model.element.*;
-import feign.Contract.VisitorContract;
-import feign.Contract.VisitorContract.ClassAnnotationProcessor;
-import feign.Contract.VisitorContract.MethodAnnotationProcessor;
-import feign.Contract.VisitorContract.ParameterAnnotationProcessor;
+import feign.DeclarativeContract;
+import feign.DeclarativeContract.AnnotationProcessor;
+import feign.DeclarativeContract.ParameterAnnotationProcessor;
 import feign.MethodMetadata;
 
 /**
@@ -33,7 +32,7 @@ import feign.MethodMetadata;
 public class APTContractVisitor {
 
   public List<MethodMetadata> parseAndValidateMetadata(TypeElement targetType,
-                                                       VisitorContract processorsSource) {
+                                                       DeclarativeContract processorsSource) {
     checkState(targetType.getTypeParameters().size() == 0, "Parameterized types unsupported: %s",
         targetType.getSimpleName());
     checkState(targetType.getInterfaces().size() <= 1, "Only single inheritance supported: %s",
@@ -63,7 +62,7 @@ public class APTContractVisitor {
    */
   protected MethodMetadata parseAndValidateMetadata(TypeElement targetType,
                                                     ExecutableElement method,
-                                                    VisitorContract processorsSource) {
+                                                    DeclarativeContract processorsSource) {
     final MethodMetadata data = new MethodMetadata();
     // TODO create warping type data.returnType(method.getReturnType());
     data.configKey(configKey(targetType, method));
@@ -175,8 +174,8 @@ public class APTContractVisitor {
    */
   protected void processAnnotationOnClass(MethodMetadata data,
                                           TypeElement targetType,
-                                          VisitorContract processorsSource) {
-    final Map<Class<Annotation>, ClassAnnotationProcessor<Annotation>> annotations =
+                                          DeclarativeContract processorsSource) {
+    final List<GuardedAnnotationProcessor> annotations =
         processorsSource.getClassAnnotationProcessors();
     annotations.forEach((type, processor) -> {
       final Annotation annotation = targetType.getAnnotation(type);
@@ -193,8 +192,8 @@ public class APTContractVisitor {
    */
   private void processAnnotationOnMethod(MethodMetadata data,
                                          ExecutableElement method,
-                                         VisitorContract processorsSource) {
-    final Map<Class<Annotation>, MethodAnnotationProcessor<Annotation>> annotations =
+                                         DeclarativeContract processorsSource) {
+    final Map<Class<Annotation>, AnnotationProcessor<Annotation>> annotations =
         processorsSource.getMethodAnnotationProcessors();
     annotations.forEach((type, processor) -> {
       final Annotation annotation = method.getAnnotation(type);
@@ -215,7 +214,7 @@ public class APTContractVisitor {
   private boolean processAnnotationsOnParameter(MethodMetadata data,
                                                 VariableElement parameter,
                                                 int paramIndex,
-                                                VisitorContract processorsSource) {
+                                                DeclarativeContract processorsSource) {
     final Map<Class<Annotation>, ParameterAnnotationProcessor<Annotation>> annotations =
         processorsSource.getParameterAnnotationProcessors();
 
